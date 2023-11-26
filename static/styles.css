@@ -50,3 +50,7 @@
     /* The max width of the info window. */
     width: 200px;
   }
+
+  .navbar li.nav-item {
+    color: #fff;
+  }

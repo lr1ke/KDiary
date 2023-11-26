@@ -6,28 +6,39 @@
 />
 <script src="{{ url_for('static', filename='map.js') }}"></script>
 {% endblock %} {% block body %}
-<nav class="navbar navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <span class="navbar-brand mb-0 h1">Navbar</span>
-  <ul class="navbar-nav mr-auto">
-    <li class="nav-item">
-      <a class="nav-link" href="{{ url_for('new_location') }}">New Location</a>
-    </li>
-  </ul>
-  <form
-    method="GET"
-    action=""
-    onsubmit="return searchAddressSubmit()"
-    class="form-inline my-2 my-lg-0"
-  >
-    <input
-      class="form-control mr-sm-2"
-      id="search_address"
-      type="search"
-      placeholder="Search near..."
-      aria-label="Search near"
-    />
-    <button class="btn btn-info my-2 my-sm-0" type="submit">Search</button>
-  </form>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    {% if current_user.is_authenticated %}
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <span class="nav-link text-reset">Hi {{ current_user.display_name }}!</span>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('new_location') }}">New Location</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+      </li>
+    </ul>
+    {% else %}
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('register') }}">New User Registration</a>
+      </li>
+    </ul>
+    {% endif %}
+    <form method="GET" action="" onsubmit="return searchAddressSubmit()" class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" id="search_address" type="search" placeholder="Search near..." aria-label="Search near">
+      <button class="btn btn-info my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
 </nav>
 
 <!--Sometimes the google map will not render / the page is blank. Giving the map div a height prop and putting it

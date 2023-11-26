@@ -1,2 +1,5 @@
 venv/
 __pycache__/
+code_snippets/
+README.md
+postgres_commands.md

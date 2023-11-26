@@ -1,36 +1,29 @@
+{% extends "layout.html" %}
+
 {% block body %}
 <div class="content-section">
   <div class="row w-50 mx-auto">
     <div class="col mt-3">
-      <h1>{{testing}}</h1>
+      <h1>Kiez Diary</h1>
       <form action="" method="POST">
         {{ form.hidden_tag() }}
         <fieldset class="card form-control d-grid gap-3">
-          <legend>Posts</legend>
-          <div class="">
-            {{ form.title.label() }} {% if form.title.errors %} {{
-            form.title(class="form-control is-invalid", placeholder="eg. Running
-            training") }}
-            <div class="invalid-feedback">
-              {% for error in form.title.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-            {% else %} {{ form.title(class="form-control", placeholder="Post
-            title") }} {% endif %}
-          </div>
 
           <div class="form-group">
-            {{ form.content.label() }} {% if form.content.errors %} {{
-            form.content(class="form-control is-invalid", placeholder="Select
+            {% if form.content.errors %} 
+            {{ form.content(class="form-control is-invalid", placeholder="Select
             activity type") }}
             <div class="invalid-feedback">
               {% for error in form.content.errors %}
               <span>{{ error }}</span>
               {% endfor %}
             </div>
-            {% else %} {{ form.content(class="form-control", placeholder="Type")
-            }} {% endif %}
+            {% else %} 
+            {{ form.content(class="form-control", placeholder="Write your Diary Entry") }} 
+            {% endif %}
+            {{ form.longitude() }}
+            {{ form.latitude() }}
+
           </div>
 
           <div class="form-group">{{ form.submit(class="secondary")}}</div>

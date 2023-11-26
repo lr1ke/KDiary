@@ -233,6 +233,7 @@ function searchAddressSubmit() {
       //document.getElementById('addressHelpBlock').innerHTML="Perfect! Here are the results near you:";
       map.setZoom(15);
       map.setCenter(results[0].geometry.location);
+
     } else {
       console.log(
         "Geocode was not successful for the following reason: " + status
@@ -241,6 +242,8 @@ function searchAddressSubmit() {
       //document.getElementById('addressHelpBlock').innerHTML="Sorry! That search did not work, try again!";
     }
   });
+
+  
 
   //prevent refresh
   return false;

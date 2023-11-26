@@ -1,0 +1,17 @@
+{% extends "base.html" %} 
+{% block title %}Public Diary{% endblock %} 
+{% block content %}
+    <h1 align="center">Kiez Diary</h1>  
+
+<ul class="list-group list-group-flush" id="posts">
+  {% for post in posts %}
+  <li class="list-group-item">
+    {{ post.date_posted }} <br>
+    {{ post.content }}
+
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}
+    
