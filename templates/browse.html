@@ -1,16 +1,21 @@
 {% extends "base.html" %} 
 {% block title %}Public Diary{% endblock %} 
 {% block content %}
-    <h1 align="center">Kiez Diary</h1>  
-<ul class="list-group list-group-flush" id="posts">
-  {% for post in diary %}
-  <li class="list-group-item">
-    {{ post.date_posted }} <br>
-    {{ post.content }}
-
-  </li>
-  {% endfor %}
-</ul>
-
+<div class="container py-5">
+  <h5 align="center"> {{ description }} </h5>  
+</div>
+{% for post in diary %}
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <small>
+      <a class="mr-2" href="{{ url_for('timely', date=post.date_posted.strftime('%H-%M-%S')) }}">{{ post.date_posted.strftime('%H:%M-%S') }}</a>
+      <a class="mr-2" href="{{ url_for('daily', date=post.date_posted.strftime('%Y-%m-%d')) }}"> {{ post.date_posted.strftime('%Y-%m-%d') }}</a>
+      </small>
+      
+      <p class="article-content">{{ post.content }}</p>
+          </div>
+</article>
+{% endfor %}
 {% endblock %}
     

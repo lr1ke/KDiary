@@ -1,28 +1,40 @@
-{% extends "base.html" %} {% block title %}Publish{% endblock %} 
+{% extends "base.html" %} 
+{% block title %}Publish{% endblock %} 
 {% block content %}
     <br>
     <div class="container py-5">
-    <h2 align="center">Görli Diary</h2>
-      <p align="center">Write an entry</p>
-    <form method="POST">
-      <textarea name="post" id="post" class="form-control placeholder="Create a new diary entry"></textarea>
-      <br />
+      <h5 align="center" >write an entry</h5>  
+      <br>
+      <br>
+
+      <form method="POST" action="">
+
+      <textarea name="post" id="post" class="form-control"></textarea>
+      <br><br></div>
       <div align="center">
         <button type="submit" class="btn btn-secondary">Publish</button>
       </div>
     </form>
-    </div>
-    
-    <div class="container py-5"
-    <ul class="list-group list-group-flush" id="notes">
-      {% for post in user.posts %}
-      <li class="list-group-item">
-        {{ post.date_posted }} <br>
-        {{ post.content }}
-      </li>
+    </div><br><br>
+
+
+      {% for post in notes %}
+        <article class="media content-section">
+         <div class="media-body">
+          <div class="article-metadata">
+            <small>
+            <a class="mr-2" href="{{ url_for('timely', date=post.date_posted.strftime('%H-%M-%S')) }}">{{ post.date_posted.strftime('%H:%M-%S') }}</a>
+            <a class="mr-2" href="{{ url_for('daily', date=post.date_posted.strftime('%Y-%m-%d')) }}"> {{ post.date_posted.strftime('%Y-%m-%d') }}</a>
+            </small>
+            
+            <p class="article-content">{{ post.content }}</p>
+                </div>
+        </article>
       {% endfor %}
-    </ul>
-    </div>
-        
-    {% endblock %}
+    </div>    
+  </div>
+
+{% endblock %}
+
+
     

@@ -1,11 +1,14 @@
-{% extends "layout.html" %}
-{% block body %}
-<div id="container">
-    <div class="content-section">
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+    <div class="container py-5">
+        <h5 align="center" >login page</h5>  
+      </div>
+    
         <form method="POST" action="">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Login</legend>
                 <div class="form-group">
                     {{ form.name.label(class="form-control-label") }}
                     {% if form.name.errors %}
@@ -51,4 +54,4 @@
         </small>
     </div>
 </div>
-{% endblock body %}
+{% endblock content %}

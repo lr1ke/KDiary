@@ -1,16 +1,14 @@
-{% extends "layout.html" %}
-{% block body %}
-<div id="container">
-    {% for field, errors in form.errors.items() %}
-    <div class="alert alert-error">
-        {{ form[field].label }}: {{ ', '.join(errors) }}
-    </div>
-    {% endfor %}
-    <div class="content-section">
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+<div class="container py-5">
+    <h5 align="center" >register page</h5>  
+  </div>
+  
+
         <form method="POST" action="">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Join Today</legend>
                 <div class="form-group">
                     {{ form.name.label(class="form-control-label") }}
                     {% if form.name.errors %}
@@ -39,8 +37,6 @@
                     {% endif %}
                 </div>
 
-             
-
                 <div class="form-group">
                     {{ form.password.label(class="form-control-label") }}
                     {% if form.password.errors %}
@@ -67,7 +63,6 @@
                     {% else %}
                         {{ form.confirm_password(class="form-control form-control-lg") }}
                     {% endif %}
-                </div>
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class='btn btn-outline-info')}}
@@ -80,4 +75,6 @@
         </small>
     </div>
 </div>
-{% endblock body %}
+</div>
+
+{% endblock content %}

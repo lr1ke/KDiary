@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container py-5">
+        <h5 align="center" >same day entries </h5>  
+        <p class="purple" align="center">{{ date }}</p>
+    </div>
+        <article class="media content-section">
+            {% for post in diary %}
+                {% if date == post.date_posted.strftime('%Y-%m-%d') %}
+                    <div class="media-body">
+                    <div class="article-metadata">
+                    <p class="article-content">{{ post.content }}</p><br>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        </article>
+{% endblock %}
+
+

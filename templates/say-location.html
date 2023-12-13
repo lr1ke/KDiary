@@ -1,12 +1,14 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 {% block head %}
     <script src="{{ url_for('static', filename='new-location.js') }}"></script>
 {% endblock %}
-{% block body %}
+{% block content %}
+<br><br>
+    <h5 align="center" >your location?</h5>  
+<br>
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">{{ post }}</legend>
             {% if form.coord_latitude.errors or  form.coord_longitude.errors %}
             <div class="alert alert-danger" role="alert">
                 Make sure to select a valid point in the map!
@@ -38,13 +40,15 @@
                     {{ form.lookup_address(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
-        </fieldset>
+        <p>... or set a pin </p>
         <div id="preview" style="width: 100%; height: 400px">
             <div id="map" style="height: 100%;"></div>
-        </div>
-        <div class="form-group">
+        </div><br><br>
+        <div class="form-group" align="center">
             {{ form.submit(class="btn btn-outline-info") }}
         </div>
+    </fieldset>
+
     </form>
 
     <!-- Async script executes immediately and must be after any DOM elements used in callback. -->

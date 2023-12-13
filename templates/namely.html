@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container py-5">
+        <h5 align="center" >{{ name }} </h5>  
+    </div>
+        <article class="media content-section">
+            {% for post in diary %}
+                {% if name == post.description %}
+                    <div class="media-body">
+                    <div class="article-metadata">
+                    <p class="article-content">{{ post.content }}</p><br>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        </article>
+{% endblock %}
+
+

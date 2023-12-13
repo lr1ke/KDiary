@@ -8,6 +8,8 @@ from models import setup_db, Location, db_drop_and_create_all, Post, db, User
 from sqlalchemy.exc import IntegrityError
 import hashlib
 from flask_login import login_user, logout_user, login_required, current_user, login_manager, LoginManager
+import timeago, datetime
+
 
 def create_app(test_config=None):
     # create and configure the app
@@ -25,12 +27,7 @@ def create_app(test_config=None):
     login_manager.login_view = 'login'
     login_manager.login_message_category = 'info'
 
-    @app.route('/', methods=['GET'])
-    def home():
-        return render_template(
-            'map.html',
-            map_key=os.getenv('GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY_WAS_NOT_SET?!')
-        )
+
 
     @app.route('/test', methods=['GET'])
     def test():
@@ -38,15 +35,7 @@ def create_app(test_config=None):
             'posts.html'
         )
 
-    @app.route('/detail', methods=['GET'])
-    def detail():
-        location_id = float(request.args.get('id'))
-        item = Location.query.get(location_id)
-        return render_template(
-            'detail.html',
-            item=item,
-            map_key=os.getenv('GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY_WAS_NOT_SET?!')
-        )
+    
 
 
     @app.route("/new-location", methods=['GET', 'POST'])
@@ -67,7 +56,7 @@ def create_app(test_config=None):
             location.insert()
 
             flash(f'New location created!', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('map'))
 
         return render_template(
             'new-location.html',
@@ -86,16 +75,13 @@ def create_app(test_config=None):
 
             post = Post(
                 content=form.content.data,
-                geom=Location.point_representation(latitude=latitude, longitude=longitude),
-                # woa test
-                user_id=1,
-
+                geom=Location.point_representation(latitude=latitude, longitude=longitude)
             )
             db.session.add(post)
             db.session.commit()
 
             flash(f'New post added!', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('map'))
 
         return render_template(
             'new-post.html',
@@ -158,42 +144,47 @@ def create_app(test_config=None):
             "message": "server error"
         }), 500
         
-        
-        
-
-        
+            
     @app.route('/about')
     def about():
-        return render_template("about.html")
+        return render_template("about.html", user=current_user)
 
         
     @app.route("/register", methods=['GET', 'POST'])
     def register():
-        # Sanity check: if the user is already authenticated then go back to home page
-        # if current_user.is_authenticated:
-        #     return redirect(url_for('home'))
-
-        # Otherwise process the RegistrationForm from request (if it came)
+        if current_user.is_authenticated:
+            return redirect(url_for('create'))
         form = RegistrationForm()
-        if form.validate_on_submit():
+        #if current_user.is_authenticated:
+          #  return redirect(url_for('create'))
+        if request.method == 'POST': 
+            if form.validate_on_submit():
             # hash user password, create user and store it in database
-            hashed_password = hashlib.md5(form.password.data.encode()).hexdigest()
-            user = User(
-                name=form.name.data,
-                email=form.email.data,
-                password=hashed_password,
-                )
+                hashed_password = hashlib.md5(form.password.data.encode()).hexdigest()
+                user = User(
+                    name=form.name.data,
+                    email=form.email.data,
+                    password=hashed_password,
+                    )
 
-            try:
-                user.insert()
-                flash(f'Account created for: {form.name.data}!', 'success')
-                return redirect(url_for('home'))
-            except IntegrityError as e:
-                flash(f'Could not register! The entered username or email might be already taken', 'danger')
-                print('IntegrityError when trying to store new user')
+                try:
+                    user.insert()
+                    flash(f'Hi {form.name.data}! Account created', 'success')
+                    return redirect(url_for('login'))
+                except IntegrityError as e:
+                    flash(f'Could not register! The entered username or email might be already taken', 'error')
+                    print('IntegrityError when trying to store new user')
                 # db.session.rollback()
 
-        return render_template('registration.html', form=form)
+        return render_template('registration.html', form=form, user=current_user)
+    
+    @app.route('/map', methods=['GET'])
+    def map():
+        return render_template(
+            'map.html',
+            user=current_user,
+            map_key=os.getenv('GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY_WAS_NOT_SET?!')
+        )
     
     
     @login_manager.user_loader
@@ -202,21 +193,18 @@ def create_app(test_config=None):
 
     @app.route("/login", methods=['GET', 'POST'])
     def login():
-        # Sanity check: if the user is already authenticated then go back to home page
-        # if current_user.is_authenticated:
-        #    return redirect(url_for('home'))
-
         form = LoginForm()
-        if form.validate_on_submit():
-            user = User.query.filter_by(name=form.name.data).first()
-            hashed_input_password = hashlib.md5(form.password.data.encode()).hexdigest()
-            if user and user.password == hashed_input_password:
-                login_user(user, remember=form.remember.data)
-                next_page = request.args.get('next')
-                return redirect(next_page) if next_page else redirect(url_for('home'))
-            else:
-                flash('Login Unsuccessful. Please check user name and password', 'danger')
-        return render_template('login.html', title='Login', form=form)
+        
+        if request.method == 'POST': 
+            if form.validate_on_submit():
+                user = User.query.filter_by(name=form.name.data).first()
+                hashed_input_password = hashlib.md5(form.password.data.encode()).hexdigest()
+                if user and user.password == hashed_input_password:
+                    login_user(user, remember=form.remember.data)
+                    return redirect(url_for('create'))
+                else:
+                    flash('Login Unsuccessful. Please check user name and password', 'error')
+        return render_template('login.html', title='Login', form=form, user=current_user)
 
     @app.route("/logout")
     @login_required
@@ -227,30 +215,29 @@ def create_app(test_config=None):
         return redirect(url_for('public'))
     
     
-    
+    @app.route('/')
     @app.route('/public')
     def public():
-        posts = Post.query.all()
+        posts = Post.query.order_by(Post.date_posted.desc())
         return render_template("public.html", user=current_user, posts=posts)
-
 
 
     @app.route('/create', methods=['GET', 'POST'])
     @login_required
     def create():
+        notes = Post.query.order_by(Post.date_posted.desc()).filter_by(user_id=current_user.id)
         if request.method == 'POST': 
             post = request.form.get('post')#Gets the post from the HTML 
             session["post"] = post
+            
             if len(post) < 2:
                 flash('Your entry is too short!', category='error') 
             elif len(post) > 240:
                 flash('Your entry is too long!', category='error')
             else:
-
-                flash('Where are you currently located?', category='success')
                 return redirect(url_for('say_location', user=current_user))
 
-        return render_template("create.html", user=current_user)
+        return render_template("create.html", user=current_user, notes=notes)
 
    
     @app.route("/say-location", methods=['GET', 'POST'])
@@ -268,24 +255,26 @@ def create_app(test_config=None):
                 description=description,
                 geom=Location.point_representation(latitude=latitude, longitude=longitude)
             )
-            location.user_id = current_user.id # <<<< added
+            location.user_id = current_user.id
             location.insert()
             
             new_post = Post(
                 content=post, 
                 user_id=current_user.id, 
+                description=description,
                 geom=Location.point_representation(latitude=latitude, longitude=longitude)
                 )  #providing the schema for the note 
-            db.session.add(new_post) #adding the note to the database 
-            db.session.commit()
+            #db.session.add(new_post) #adding the note to the database 
+            #db.session.commit()
+            new_post.insert()
         
             flash(f'Your entry gets published!', 'success')
-            return redirect(url_for('public'))
+            return redirect(url_for('create'))
 
-        return render_template(
+        return render_template( 
             'say-location.html',
             form=form,
-            
+            user=current_user,
             map_key=os.getenv('GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY_WAS_NOT_SET?!')
         )
         
@@ -300,15 +289,14 @@ def create_app(test_config=None):
 
             diary = Post.get_items_within_radius(lat, lng, radius)
             session["diary"] = diary
-
+            session["description"] = form.description.data
             
-            flash('Entries in your selected area', category='success')
             return redirect(url_for('browse'))
         
-
         return render_template(
             'select-area.html',
             form=form,
+            user=current_user,
             map_key=os.getenv('GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY_WAS_NOT_SET?!')
         )        
         
@@ -316,10 +304,81 @@ def create_app(test_config=None):
     @app.route("/browse", methods=['GET', 'POST'])
     def browse():
         diary = session["diary"]
+        description = session["description"]
         
-        return render_template("browse.html", user=current_user, diary=diary)
+        return render_template("browse.html", user=current_user, diary=diary, description=description)
+    
+    
+    @app.route('/detail', methods=['GET'])
+    def detail():
+        location_id = float(request.args.get('id'))
+        item = Location.query.get(location_id)
+        geom1 = item.geom
+        
+        diary = Post.get_items_with_same_geom(geom1)
 
+        return render_template(
+            'detail_geom.html',
+            item=item,
+            diary=diary,
+            user=current_user,
+            map_key=os.getenv('GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY_WAS_NOT_SET?!')
+        )
+    
+    
+    @app.route('/daily', methods=['GET'])
+    def daily():
+        date = request.args.get('date')
+        #diary = Post.get_same_day_items(date)
+        #diary = Post.query.get(date)
+        diary = Post.query.all()
+    
+        return render_template(
+            'daily.html',
+            diary=diary,
+            date=date,
+            user=current_user,
+            map_key=os.getenv('GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY_WAS_NOT_SET?!')
+        )
+    
+    
+            
+    @app.route('/namely', methods=['GET'])
+    def namely():
+        name = request.args.get('name')
+        #diary = Post.get_same_day_items(date)
+        #diary = Post.query.get(date)
+        diary = Post.query.all()
+        
+        return render_template(
+            'namely.html',
+            diary=diary,
+            name=name,
+            user=current_user,
+            map_key=os.getenv('GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY_WAS_NOT_SET?!')
+        )
+        
+  
+        
+    
+    @app.route('/timely', methods=['GET'])
+    def timely():
+        time = request.args.get('time')
+        #diary = Post.get_same_day_items(date)
+        #diary = Post.query.get(date)
+        diary = Post.query.all()
+        
+        return render_template(
+            'timely.html',
+            diary=diary,
+            time=time,
+            user=current_user,
+            map_key=os.getenv('GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY_WAS_NOT_SET?!')
+        )
 
+    @app.template_filter('timeago')
+    def fromnow(date):
+        return timeago.format(date, datetime.datetime.now())
 
         
       

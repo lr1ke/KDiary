@@ -47,7 +47,7 @@ def insert_sample_locations():
         email="admin@dummy.mail",
         password=hashlib.md5("admin".encode()).hexdigest()
     )
-    admin_user.insert()
+    #admin_user.insert()
 
     loc1 = Location(
         description='Brandenburger Tor',
@@ -56,8 +56,8 @@ def insert_sample_locations():
             longitude=13.377711
         )
     )
-    loc1.user = admin_user # <<<
-    loc1.insert()
+    #loc1.user = admin_user # <<<
+    #loc1.insert()
 
     loc2 = Location(
         description='Schloss Charlottenburg',
@@ -66,8 +66,8 @@ def insert_sample_locations():
             longitude=13.295581
         )
     )
-    loc2.user = admin_user # <<<
-    loc2.insert()
+    #loc2.user = admin_user # <<<
+    #loc2.insert()
 
     loc3 = Location(
         description='Tempelhofer Feld',
@@ -76,8 +76,8 @@ def insert_sample_locations():
             longitude=13.405252
         )
     )
-    loc3.user = admin_user # <<<
-    loc3.insert()
+    #loc3.user = admin_user # <<<
+    #loc3.insert()
 
 ##################################################### 1 table
 
@@ -157,6 +157,7 @@ class Post(db.Model):
     geom = Column(Geometry(geometry_type='POINT', srid=SpatialConstants.SRID))
     # location = db.Column(db.Geometry, nullable=False)
     user_id=db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    description = db.Column(db.String(200), nullable=False) 
   
 
     @staticmethod
@@ -164,11 +165,24 @@ class Post(db.Model):
         point = 'POINT(%s %s)' % (longitude, latitude)
         wkb_element = WKTElement(point, srid=SpatialConstants.SRID)
         return wkb_element
+    
+
+    
+    @staticmethod
+    def get_items_with_same_geom(geom1):
+        """Return all posts with same geometry"""
+        #TODO: The arbitrary limit = 100 is just a quick way to make sure
+        # we won't return tons of entries at once,
+        # paging needs to be in place for real usecase
+        results = Post.query.filter(Post.geom==geom1).limit(100).all()
+        return [l.to_dict() for l in results]
+    
+        
+
 
     @staticmethod
     def get_items_within_radius(lat, lng, radius):
         """Return all posts within a given radius (in meters)"""
-
         #TODO: The arbitrary limit = 100 is just a quick way to make sure
         # we won't return tons of entries at once,
         # paging needs to be in place for real usecase
@@ -178,9 +192,9 @@ class Post(db.Model):
                 cast(from_shape(Point(lng, lat)), Geography),
                 radius)
             ).limit(100).all()
-
         return [l.to_dict() for l in results]
-  
+
+
     def get_location_latitude(self):
         point = to_shape(self.geom)
         return point.y
@@ -194,7 +208,7 @@ class Post(db.Model):
             'id': self.id,
             'content': self.content,
             'date_posted': self.date_posted,
-            #'description': self.description,
+            'description': self.description,
             'location': {
                 'lng': self.get_location_longitude(),
                 'lat': self.get_location_latitude()

@@ -4,9 +4,9 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 
 class NewLocationForm(FlaskForm):
-    description = StringField('Location description',
+    description = StringField('Name of the area',
                            validators=[DataRequired(), Length(min=1, max=80)])
-    lookup_address = StringField('Search address')
+    lookup_address = StringField('Name of a street, place or building')
 
     coord_latitude = HiddenField('Latitude',validators=[DataRequired()])
 
@@ -16,7 +16,9 @@ class NewLocationForm(FlaskForm):
     
     
 class SelectAreaForm(FlaskForm):
-    lookup_address = StringField('Enter the name of a street, place or building')
+    description = StringField('Name of the area',
+                           validators=[DataRequired(), Length(min=1, max=80)])
+    lookup_address = StringField('Name of a street, place or building')
     radius = IntegerField('Search radius (in meter)', 
                           validators=[DataRequired()])
 
