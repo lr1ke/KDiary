@@ -10,7 +10,7 @@ Frontend Technologies:
 
 Backend Technologies:
 - Implemented the server-side logic using Python Flask, enabling the handling of user interactions, data storage, and dynamic content generation.
-- Utilized SQL for efficient data management and storage, ensuring scalability for user-generated content.
+- Database management with PostgreSQL, ensuring scalability for user-generated content.
 
 Geolocation Integration:
 - Integrated the Google Maps API to enable geolocation-based features, allowing users to associate their blog posts with specific locations on the map.
