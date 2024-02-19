@@ -27,14 +27,6 @@ def create_app(test_config=None):
     login_manager.login_view = 'login'
     login_manager.login_message_category = 'info'
 
-
-
-    @app.route('/test', methods=['GET'])
-    def test():
-        return render_template(
-            'posts.html'
-        )
-
     
 
 
@@ -329,8 +321,6 @@ def create_app(test_config=None):
     @app.route('/daily', methods=['GET'])
     def daily():
         date = request.args.get('date')
-        #diary = Post.get_same_day_items(date)
-        #diary = Post.query.get(date)
         diary = Post.query.all()
     
         return render_template(
@@ -346,8 +336,6 @@ def create_app(test_config=None):
     @app.route('/namely', methods=['GET'])
     def namely():
         name = request.args.get('name')
-        #diary = Post.get_same_day_items(date)
-        #diary = Post.query.get(date)
         diary = Post.query.all()
         
         return render_template(
@@ -358,14 +346,10 @@ def create_app(test_config=None):
             map_key=os.getenv('GOOGLE_MAPS_API_KEY', 'GOOGLE_MAPS_API_KEY_WAS_NOT_SET?!')
         )
         
-  
-        
-    
+      
     @app.route('/timely', methods=['GET'])
     def timely():
         time = request.args.get('time')
-        #diary = Post.get_same_day_items(date)
-        #diary = Post.query.get(date)
         diary = Post.query.all()
         
         return render_template(
@@ -380,11 +364,7 @@ def create_app(test_config=None):
     def fromnow(date):
         return timeago.format(date, datetime.datetime.now())
 
-        
-      
-     
-
-
+    
     return app
 
 

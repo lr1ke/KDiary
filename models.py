@@ -178,8 +178,7 @@ class Post(db.Model):
         return [l.to_dict() for l in results]
     
         
-
-
+        
     @staticmethod
     def get_items_within_radius(lat, lng, radius):
         """Return all posts within a given radius (in meters)"""
