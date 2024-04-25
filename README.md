@@ -13,12 +13,7 @@ Backend Technologies:
 - Database management with PostgreSQL, ensuring scalability for user-generated content.
 
 Geolocation Integration:
-- Integrated the Google Maps API to enable geolocation-based features, allowing users to associate their blog posts with specific locations on the map.
-
-Key Features:
-- Geotagging: Users can tag their blog posts with geolocation data, creating a spatial context for their experiences.
-- Interactive Map: The integration of the Google Maps API provides an interactive map where users can explore and discover posts based on location.
-- Dynamic Content: Python Flask powers dynamic content generation, ensuring that users can seamlessly navigate and interact with the site.
+- Integrated the Google Maps API to enable geolocation-based features.
 
 Outcome:
 KDiary offers a unique and immersive blogging experience by combining the power of geolocation with user-generated content.
